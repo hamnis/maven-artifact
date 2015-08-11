@@ -31,7 +31,6 @@ setup(
 
     # The project's main homepage.
     url='https://github.com/hamnis/maven-artifact',
-    bugtrack_url='',
 
     # Author details
     author='Erlend Hamnaberg',
