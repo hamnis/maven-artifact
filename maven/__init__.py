@@ -1,3 +1,3 @@
-from Requestor import Requestor,RequestException
-from Artifact import Artifact
-from Resolver import Resolver
+from .requestor import Requestor,RequestException
+from .artifact import Artifact
+from .resolver import Resolver
