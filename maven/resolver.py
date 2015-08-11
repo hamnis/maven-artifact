@@ -1,6 +1,6 @@
 from lxml import etree
 
-from Requestor import RequestException
+from requestor import RequestException
 
 class Resolver(object):
     def __init__(self, base, requestor):    
