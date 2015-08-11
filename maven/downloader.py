@@ -1,8 +1,8 @@
 import hashlib
 import os
-from Requestor import Requestor,RequestException
-from Resolver import Resolver
-from Artifact import Artifact
+from requestor import Requestor,RequestException
+from resolver import Resolver
+from artifact import Artifact
 import sys
 import getopt
 
