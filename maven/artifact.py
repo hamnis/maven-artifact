@@ -32,7 +32,7 @@ class Artifact(object):
         elif not self.is_snapshot():
             resolved_version = self.version
         if self.classifier:
-            return base + "/" + self.path() + "/" + self.artifact_id + "-" + resolved_version + "-" + self.classifier + "." + artifact.extension
+            return base + "/" + self.path() + "/" + self.artifact_id + "-" + resolved_version + "-" + self.classifier + "." + self.extension
         return base + "/" + self.path() + "/" + self.artifact_id + "-" + resolved_version + "." + self.extension
 
     def with_version(self, _version):
