@@ -127,7 +127,7 @@ def main():
         if not base:
             base = options.get("--maven-repo")
         if not base:
-            base = "http://repo1.maven.org/maven2"
+            base = "https://repo1.maven.org/maven2"
         username = options.get("-u")
         if not username:
             username = options.get("--username")
