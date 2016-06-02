@@ -35,7 +35,7 @@ echo "Tagging $1"
 git tag v$1
 
 cd dist
-gpg -sign -a maven_artifact-$1-py2.py3-none-any.whl
+gpg --sign -a maven_artifact-$1-py2.py3-none-any.whl
 cd ..
 twine upload dist/maven_artifact-$1-py2.py3-none-any.whl
 else
