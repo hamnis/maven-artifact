@@ -22,7 +22,7 @@ class Downloader(object):
             else:
                 hook=self._chunk_report_suppress
 
-            onError = lambda uri, err: _throwDownloadFailed("Failed to download artifact " + str(artifact) + "from " + uri)
+            onError = lambda uri, err: self._throwDownloadFailed("Failed to download artifact " + str(artifact) + "from " + uri)
             response = self.requestor.request(url, onError, lambda r: r)
             
             if response:
@@ -38,7 +38,7 @@ class Downloader(object):
                 print("%s is already up to date" % artifact)
             return (artifact, True)
 
-    def _throwDownloadFailed(msg):
+    def _throwDownloadFailed(self, msg):
         raise RequestException(msg)
 
     def _chunk_report_suppress(self, bytes_so_far, chunk_size, total_size):
