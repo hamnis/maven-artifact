@@ -76,7 +76,7 @@ class Downloader(object):
             return False
         else:
             local_md5 = self._local_md5(file)
-            onError = lambda uri, err: _throwDownloadFailed("Failed to download MD5 from " + uri)
+            onError = lambda uri, err: self._throwDownloadFailed("Failed to download MD5 from " + uri)
             remote = self.requestor.request(remote_md5, onError, lambda r: r.read())
             return local_md5 == remote
 
