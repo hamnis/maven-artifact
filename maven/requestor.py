@@ -2,7 +2,7 @@ import base64
 from urllib2 import Request, urlopen, URLError, HTTPError
 
 class Requestor(object):
-    def __init__(self, username = None, password = None, user_agent = "Maven Artifact Downloader/1.0"):    
+    def __init__(self, username = None, password = None, user_agent = "Maven Artifact Downloader/1.0"):
         self.user_agent = user_agent
         self.username = username
         self.password = password
@@ -15,9 +15,9 @@ class Requestor(object):
         req = Request(url, None, headers)
         try:
             response = urlopen(req)
-        except HTTPError, e:
+        except HTTPError as e:
             onFail(url, e)
-        except URLError, e:
+        except URLError as e:
             onFail(url, e)
         else:
             return onSuccess(response)

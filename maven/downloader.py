@@ -11,7 +11,7 @@ class Downloader(object):
         self.requestor = Requestor(username, password)
         self.resolver = Resolver(base, self.requestor)
 
-    
+
     def download(self, artifact, filename=None, suppress_log=False):
         filename = artifact.get_filename(filename)
         url = self.resolver.uri_for_artifact(artifact)
@@ -24,7 +24,7 @@ class Downloader(object):
 
             onError = lambda uri, err: self._throwDownloadFailed("Failed to download artifact " + str(artifact) + "from " + uri)
             response = self.requestor.request(url, onError, lambda r: r)
-            
+
             if response:
                 with open(filename, 'w') as f:
                     self._write_chunks(response, f, report_hook=hook)
@@ -95,7 +95,7 @@ __doc__ = """
      -m <url>      --maven-repo=<url>
      -u <username> --username=<username>
      -p <password> --password=<password>
-     
+
    Maven-Coordinate are defined by: http://maven.apache.org/pom.html#Maven_Coordinates
       The possible options are:
       - groupId:artifactId:version
@@ -111,7 +111,7 @@ __doc__ = """
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "m:u:p:", ["maven-repo=", "username=", "password="])
-    except getopt.GetoptError, err:
+    except getopt.GetoptError as err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
         usage()
@@ -148,7 +148,7 @@ def main():
             else:
                 usage()
                 sys.exit(1)
-        except RequestException, e:
+        except RequestException as e:
             print e.msg
             sys.exit(1)
 
