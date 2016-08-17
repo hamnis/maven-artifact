@@ -1,9 +1,9 @@
 from lxml import etree
 
-from requestor import RequestException
+from .requestor import RequestException
 
 class Resolver(object):
-    def __init__(self, base, requestor):    
+    def __init__(self, base, requestor):
         self.requestor = requestor
         if base.endswith("/"):
             base = base.rstrip("/")
@@ -30,12 +30,12 @@ class Resolver(object):
 
     def resolve(self, artifact):
         version = artifact.version
-        if not artifact.version or artifact.version == "latest":            
+        if not artifact.version or artifact.version == "latest":
             version = self._find_latest_version_available(artifact)
-        elif artifact.is_snapshot():            
+        elif artifact.is_snapshot():
             version = self._find_latest_snapshot_version(artifact)
         return artifact.with_version(version)
 
-    def uri_for_artifact(self, artifact):        
+    def uri_for_artifact(self, artifact):
         resolved = self.resolve(artifact)
         return artifact.uri(self.base, resolved.version)
