@@ -1,5 +1,12 @@
 import base64
-from urllib2 import Request, urlopen, URLError, HTTPError
+
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen, Request
+    from urllib.error import URLError, HTTPError
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import Request, urlopen, URLError, HTTPError
 
 class Requestor(object):
     def __init__(self, username = None, password = None, user_agent = "Maven Artifact Downloader/1.0"):
