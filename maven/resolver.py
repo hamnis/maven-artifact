@@ -20,9 +20,8 @@ class Resolver(object):
         path = "/%s/maven-metadata.xml" % (artifact.path())
 
         xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.parse(r))
-        timestamp = xml.xpath("/metadata/versioning/snapshot/timestamp/text()")[0]
-        buildNumber = xml.xpath("/metadata/versioning/snapshot/buildNumber/text()")[0]
-        return timestamp + "-" + buildNumber
+        snapshot_version = xml.xpath("/metadata/versioning/snapshotVersions/snapshotVersion/value/text()")[0]
+        return snapshot_version
 
     def _onFail(self, url, e):
         raise RequestException("Failed to download maven-metadata.xml from '%s'" % url)
