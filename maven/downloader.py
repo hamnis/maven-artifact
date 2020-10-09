@@ -113,12 +113,12 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "m:u:p:", ["maven-repo=", "username=", "password="])
     except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
+        print(str(err)) # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
 
     if not len(args):
-        print "No maven coordiantes supplied"
+        print("No maven coordiantes supplied")
         usage()
         sys.exit(2)
     else:
@@ -149,7 +149,7 @@ def main():
                 usage()
                 sys.exit(1)
         except RequestException as e:
-            print e.msg
+            print(e.msg)
             sys.exit(1)
 
 
