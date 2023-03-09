@@ -32,8 +32,7 @@ class Resolver(object):
         return meta_version
 
     def _onFail(self, url, e):
-        raise e
-        raise RequestException("Failed to download maven-metadata.xml from '%s'" % url)
+        raise RequestException(f"Failed to download maven-metadata.xml from {url} due to {e}")
 
     def resolve(self, artifact):
         version = artifact.version
