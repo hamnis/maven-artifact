@@ -1,4 +1,4 @@
-import os.path
+import os
 
 class Artifact(object):
     def __init__(self, group_id, artifact_id, version, classifier=None, extension=None):
@@ -11,32 +11,24 @@ class Artifact(object):
         self.artifact_id = artifact_id
         self.version = version
         self.classifier = classifier
-        if not extension:
-            self.extension = "jar"
-        else:
-            self.extension = extension
+        self.extension = extension or "jar"
 
-    def is_snapshot(self):        
+    def is_snapshot(self):
         return self.version and self.version.endswith("-SNAPSHOT")
 
     def path(self, with_version=True):
-        base = os.path.join(self.group_id.replace(".", "/"), self.artifact_id)
-        if with_version:
-            return os.path.join(base, self.version)
-        else:
-            return base
+        base = self.group_id.replace(".", "/") + "/" + self.artifact_id
+        return base if not with_version else f"{base}/{self.version}"
 
     def uri(self, base, resolved_version=None):
         if self.is_snapshot() and not resolved_version:
             raise ValueError("Expected unique version for snapshot artifact " + str(self))
         elif not self.is_snapshot():
             resolved_version = self.version
+        ret = f"{base}/{self.path()}/{self.artifact_id}-{resolved_version}"
         if self.classifier:
-            return os.path.join(base, self.path(), "%s-%s-%s.%s" % (self.artifact_id, resolved_version,
-                                                                    self.classifier, self.extension))
-        return os.path.join(base, self.path(), "%s-%s.%s" % (self.artifact_id,
-                                                             resolved_version,
-                                                             self.extension))
+            ret += "-" + self.classifier
+        return f"{ret}.{self.extension}"
 
     def with_version(self, _version):
         return Artifact(
@@ -48,9 +40,8 @@ class Artifact(object):
 
     def _generate_filename(self):
         if not self.classifier:
-            return "%s.%s" % (self.artifact_id, self.extension)
-        else:
-            return "%s-%s.%s" % (self.artifact_id, self.classifier, self.extension)
+            return f"{self.artifact_id}.{self.extension}"
+        return f"{self.artifact_id}-{self.classifier}.{self.extension}"
 
     def get_filename(self, filename=None):
         if not filename:
