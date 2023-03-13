@@ -11,90 +11,41 @@ class Downloader(object):
         self.requestor = Requestor(username, password)
         self.resolver = Resolver(base, self.requestor)
 
-
-    def download(self, artifact, filename=None, suppress_log=False):
+    def download(self, artifact, filename=None, hash_type="md5"):
         filename = artifact.get_filename(filename)
         url = self.resolver.uri_for_artifact(artifact)
-        if not self.verify_md5(filename, url + ".md5"):
-            if not suppress_log:
-                print("Downloading artifact " + str(artifact))
-                hook=self._chunk_report
-            else:
-                hook=self._chunk_report_suppress
+        if os.path.exists(filename) and self.verify_file(filename, url, hash_type=hash_type):
+            print("%s is already up to date" % artifact)
+            return artifact
 
-            onError = lambda uri, err: self._throwDownloadFailed("Failed to download artifact " + str(artifact) + "from " + uri)
-            response = self.requestor.request(url, onError, lambda r: r)
-
-            if response:
-                with open(filename, 'w') as f:
-                    self._write_chunks(response, f, report_hook=hook)
-                if not suppress_log:
-                    print("Downloaded artifact %s to %s" % (artifact, filename))
-                return (artifact, True)
-            else:
-                return (artifact, False)
-        else:
-            if not suppress_log:
-                print("%s is already up to date" % artifact)
-            return (artifact, True)
+        print(f"Downloading artifact {artifact} from {url}")
+        onError = lambda uri, err: self._throwDownloadFailed(f"Failed to download {artifact} from {uri} \n{err}")
+        with self.requestor.request(url, onError, stream=True) as r:
+            with open(filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+        print(f"Maven artifact {artifact} is downloaded to {filename}")
+        return artifact
 
     def _throwDownloadFailed(self, msg):
         raise RequestException(msg)
 
-    def _chunk_report_suppress(self, bytes_so_far, chunk_size, total_size):
-        pass
-
-    def _chunk_report(self, bytes_so_far, chunk_size, total_size):
-        percent = float(bytes_so_far) / total_size
-        percent = round(percent*100, 2)
-        sys.stdout.write("Downloaded %d of %d bytes (%0.2f%%)\r" %
-                 (bytes_so_far, total_size, percent))
-
-        if bytes_so_far >= total_size:
-            sys.stdout.write('\n')
-
-    def _write_chunks(self, response, file, chunk_size=8192, report_hook=None):
-        total_size = response.info().getheader('Content-Length').strip()
-        total_size = int(total_size)
-        bytes_so_far = 0
-
-        while 1:
-            chunk = response.read(chunk_size)
-            bytes_so_far += len(chunk)
-
-            if not chunk:
-                break
-
-            file.write(chunk)
-            if report_hook:
-                report_hook(bytes_so_far, chunk_size, total_size)
-
-        return bytes_so_far
-
-    def verify_md5(self, file, remote_md5):
-        if not os.path.exists(file):
-            return False
-        else:
-            local_md5 = self._local_md5(file)
-            onError = lambda uri, err: self._throwDownloadFailed("Failed to download MD5 from " + uri)
-            remote = self.requestor.request(remote_md5, onError, lambda r: r.read())
-            return local_md5 == remote
-
-    def _local_md5(self, file):
-        md5 = hashlib.md5()
-        with open(file, 'rb') as f:
-            for chunk in iter(lambda: f.read(8192), ''):
-                md5.update(chunk)
-        return md5.hexdigest()
+    def verify_file(self, file, url, hash_type: str = "md5"):
+        url = f"{url}.{hash_type}"
+        onError = lambda uri, err: self._throwDownloadFailed("Failed to download hash file from " + uri)
+        remote_hash = self.requestor.request(url, onError, lambda r: r.text)
+        local_hash = getattr(hashlib, hash_type)(open(file, "rb").read()).hexdigest()
+        return remote_hash == local_hash
 
 
 __doc__ = """
    Usage:
    %(program_name)s <options> Maven-Coordinate filename
    Options:
-     -m <url>      --maven-repo=<url>
-     -u <username> --username=<username>
-     -p <password> --password=<password>
+     -m <url>       --maven-repo=<url>
+     -u <username>  --username=<username>
+     -p <password>  --password=<password>
+     -ht <hashtype> --hash-type=<hashtype>
 
    Maven-Coordinate are defined by: http://maven.apache.org/pom.html#Maven_Coordinates
       The possible options are:
@@ -110,7 +61,9 @@ __doc__ = """
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "m:u:p:", ["maven-repo=", "username=", "password="])
+        opts, args = getopt.getopt(sys.argv[1:],
+            "m:u:p:ht",
+            ["maven-repo=", "username=", "password=", "hash-type="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(str(err)) # will print something like "option -a not recognized"
@@ -123,27 +76,20 @@ def main():
         sys.exit(2)
     else:
         options = dict(opts)
-        base = options.get("-m")
-        if not base:
-            base = options.get("--maven-repo")
-        if not base:
-            base = "https://repo1.maven.org/maven2"
-        username = options.get("-u")
-        if not username:
-            username = options.get("--username")
-        password = options.get("-p")
-        if not password:
-            options.get("--password")
+
+        base = options.get("-m") or options.get("--maven-repo", "https://repo1.maven.org/maven2")
+        username = options.get("-u") or options.get("--username")
+        password = options.get("-p") or options.get("--password")
+        hash_type = options.get("-ht") or options.get("--hash-type", "md5")
+
         dl = Downloader(base, username, password)
 
         artifact = Artifact.parse(args[0])
 
-        filename = None
-        if len(args) == 2:
-            filename = args[1]
-        try:
+        filename = args[1] if len(args) == 2 else None
 
-            if dl.download(artifact, filename):
+        try:
+            if dl.download(artifact, filename, hash_type):
                 sys.exit(0)
             else:
                 usage()

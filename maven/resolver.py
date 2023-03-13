@@ -11,21 +11,28 @@ class Resolver(object):
 
     def _find_latest_version_available(self, artifact):
         path = "/%s/maven-metadata.xml" % (artifact.path(False))
-        xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.parse(r))
+        xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.fromstring(r.content))
         v = xml.xpath("/metadata/versioning/versions/version[last()]/text()")
         if v:
             return v[0]
 
     def _find_latest_snapshot_version(self, artifact):
         path = "/%s/maven-metadata.xml" % (artifact.path())
-
-        xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.parse(r))
-        snapshot_version = xml.xpath("/metadata/versioning/snapshotVersions/snapshotVersion/value/text()")[0]
-        return snapshot_version
+        xml = self.requestor.request(
+            self.base + path, self._onFail, lambda r: etree.fromstring(r.content)
+            )
+        timestamp = xml.xpath("/metadata/versioning/snapshot/timestamp/text()")[0]
+        buildNumber = xml.xpath("/metadata/versioning/snapshot/buildNumber/text()")[0]
+        meta_version = f"{timestamp}-{buildNumber}"
+        # obtain exact version value
+        versions = xml.xpath("/metadata/versioning/snapshotVersions/snapshotVersion/value/text()")
+        for version in set(versions):
+            if meta_version in version:
+                return version
+        return meta_version
 
     def _onFail(self, url, e):
-        raise RequestException("Failed to download maven-metadata.xml from '%s'" % url)
-
+        raise RequestException(f"Failed to download maven-metadata.xml from {url} due to {e}")
 
     def resolve(self, artifact):
         version = artifact.version
