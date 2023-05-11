@@ -61,6 +61,9 @@ requires-python = ">=2.6"
 
 dependencies = ["lxml", "requests"]
 
+[project.scripts]
+maven-artifact = "maven_artifact.downloader:main"
+
 [tool.hatch.envs.test]
 dependencies = ["pytest", "pytest-sugar", "pytest-cov" ]
 
