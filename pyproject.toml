@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling", "build", "twine"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+addopts = [ "-s" , "--import-mode=importlib" ]
+pythonpath = [".", "src", "tests"]
+testpaths = [ "tests"]
+
+[project]
+name = "maven-artifact"
+version = "0.3.0"
+authors = [
+  { name="Erlend Hamnaberg", email="erlend@hamnaberg.net" },
+]
+description = "Download and resolve maven artifacts"
+readme = "README.md"
+license = "Apache-2.0"
+
+homepage = "https://github.com/hamnis/maven-artifact"
+repository = " https://github.com/jimisola/maven-artifact.git "
+documentation = "https://github.com/hamnis/maven-artifact"
+
+keywords = ["maven", "mvn", "artifact", "download"]
+
+classifiers = [
+    # How mature is this project? Common values are
+    #   3 - Alpha
+    #   4 - Beta
+    #   5 - Production/Stable
+    'Development Status :: 3 - Alpha',
+
+    # Indicate who your project is intended for
+    'Intended Audience :: Developers',
+    'Topic :: Software Development :: Build Tools',
+
+    # Pick your license as you wish (should match "license" above)
+    'License :: OSI Approved :: Apache Software License',
+
+    # Specify the Python versions you support here. In particular, ensure
+    # that you indicate whether you support Python 2, Python 3 or both.
+    'Programming Language :: Python :: 2',
+    'Programming Language :: Python :: 2.6',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.2',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
+    'Programming Language :: Python :: 3.5',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+ 
+    "Operating System :: OS Independent",
+]
+
+requires-python = ">=2.6"
+
+dependencies = ["lxml", "requests"]
+
+[project.scripts]
+maven-artifact = "maven_artifact.downloader:main"
+
+[tool.hatch.envs.test]
+dependencies = ["pytest", "pytest-sugar", "pytest-cov" ]
+
+[tool.hatch.envs.dev]
+dependencies = ["check-manifest"]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [ "black", "flake8", "flake8-pyproject" ]
+
+[tool.black]
+line-length = 120
+target-version = ['py310']
+
+[tool.flake8]
+ignore = ["W503" ]
+max-line-length = 120
+# exclude = tests/*
+max-complexity = 16
