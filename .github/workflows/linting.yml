@@ -18,3 +18,6 @@ jobs:
         run: hatch run lint:black --check --verbose src tests
       - name: Run flake8 linter
         run: hatch run lint:flake8
+      - name: Run unit and integrations tests
+        run: hatch run test:pytest --cov=maven_artifact --cov-report=xml --cov-report=html
+

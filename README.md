@@ -14,5 +14,9 @@ A python library to download and resolve maven artifacts.
 
  * Fork repo
  * Before submitting a PR
-   * Perform formatting (black):  `hatch run:lint black src tests`
-   * Run linter (flake8): `hatch run:flake8`
+   * Perform formatting (black):  `hatch run lint:black src tests`
+   * Run linter (flake8): `hatch run lint:flake8`
+   * Run tests:
+     * all: `hatch run test:pytest --cov=maven_artifact`
+     * unit only: `hatch run test:pytest --cov=maven_artifact  tests/unit`
+     * integration only: `hatch run test:pytest --cov=maven_artifact  tests/integration`
