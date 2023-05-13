@@ -1,10 +1,11 @@
 import hashlib
 import os
-from .requestor import Requestor,RequestException
+from .requestor import Requestor, RequestException
 from .resolver import Resolver
 from .artifact import Artifact
 import sys
 import getopt
+
 
 class Downloader(object):
     def __init__(self, base="http://repo1.maven.org/maven2", username=None, password=None):
@@ -19,9 +20,12 @@ class Downloader(object):
             return artifact
 
         print(f"Downloading artifact {artifact} from {url}")
-        onError = lambda uri, err: self._throwDownloadFailed(f"Failed to download {artifact} from {uri} \n{err}")
+
+        def onError(uri, err):
+            self._throwDownloadFailed(f"Failed to download {artifact} from {uri} \n{err}")
+
         with self.requestor.request(url, onError, stream=True) as r:
-            with open(filename, 'wb') as f:
+            with open(filename, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
         print(f"Maven artifact {artifact} is downloaded to {filename}")
@@ -32,7 +36,10 @@ class Downloader(object):
 
     def verify_file(self, file, url, hash_type: str = "md5"):
         url = f"{url}.{hash_type}"
-        onError = lambda uri, err: self._throwDownloadFailed("Failed to download hash file from " + uri)
+
+        def onError(uri, err):
+            self._throwDownloadFailed("Failed to download hash file from " + uri)
+
         remote_hash = self.requestor.request(url, onError, lambda r: r.text)
         local_hash = getattr(hashlib, hash_type)(open(file, "rb").read()).hexdigest()
         return remote_hash == local_hash
@@ -59,14 +66,13 @@ __doc__ = """
      %(program_name)s "org.apache.solr:solr:war:3.5.0"
   """
 
+
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:],
-            "m:u:p:ht",
-            ["maven-repo=", "username=", "password=", "hash-type="])
+        opts, args = getopt.getopt(sys.argv[1:], "m:u:p:ht", ["maven-repo=", "username=", "password=", "hash-type="])
     except getopt.GetoptError as err:
         # print help information and exit:
-        print(str(err)) # will print something like "option -a not recognized"
+        print(str(err))  # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
 
@@ -100,7 +106,8 @@ def main():
 
 
 def usage():
-    print(__doc__ % {'program_name': os.path.basename(sys.argv[0])})
+    print(__doc__ % {"program_name": os.path.basename(sys.argv[0])})
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

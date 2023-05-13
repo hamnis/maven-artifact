@@ -81,5 +81,4 @@ target-version = ['py310']
 [tool.flake8]
 ignore = ["W503" ]
 max-line-length = 120
-# exclude = tests/*
 max-complexity = 16

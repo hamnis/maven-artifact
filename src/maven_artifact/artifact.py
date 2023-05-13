@@ -1,5 +1,6 @@
 import os
 
+
 class Artifact(object):
     def __init__(self, group_id, artifact_id, version, classifier=None, extension=None):
         if not group_id:
@@ -31,12 +32,7 @@ class Artifact(object):
         return f"{ret}.{self.extension}"
 
     def with_version(self, _version):
-        return Artifact(
-            self.group_id,
-            self.artifact_id,
-            _version,
-            self.classifier,
-            self.extension)
+        return Artifact(self.group_id, self.artifact_id, _version, self.classifier, self.extension)
 
     def _generate_filename(self):
         if not self.classifier:
