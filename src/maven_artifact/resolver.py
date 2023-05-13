@@ -2,6 +2,7 @@ from lxml import etree
 
 from .requestor import RequestException
 
+
 class Resolver(object):
     def __init__(self, base, requestor):
         self.requestor = requestor
@@ -18,9 +19,7 @@ class Resolver(object):
 
     def _find_latest_snapshot_version(self, artifact):
         path = "/%s/maven-metadata.xml" % (artifact.path())
-        xml = self.requestor.request(
-            self.base + path, self._onFail, lambda r: etree.fromstring(r.content)
-            )
+        xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.fromstring(r.content))
         timestamp = xml.xpath("/metadata/versioning/snapshot/timestamp/text()")[0]
         buildNumber = xml.xpath("/metadata/versioning/snapshot/buildNumber/text()")[0]
         meta_version = f"{timestamp}-{buildNumber}"

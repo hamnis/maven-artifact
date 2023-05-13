@@ -1,18 +1,20 @@
 name: Build and publish to PyPI
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
     tags:
       - 'v*.*.*'
 
 jobs:
   build-and-publish:
+    needs: linting
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing      
     steps:
-    - uses: actions/checkout@v3
+    - name: Check out source repository
+      uses: actions/checkout@v3
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
