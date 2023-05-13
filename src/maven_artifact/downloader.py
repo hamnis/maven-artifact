@@ -20,7 +20,10 @@ class Downloader(object):
             return artifact
 
         print(f"Downloading artifact {artifact} from {url}")
-        onError = lambda uri, err: self._throwDownloadFailed(f"Failed to download {artifact} from {uri} \n{err}")
+
+        def onError(uri, err):
+            self._throwDownloadFailed(f"Failed to download {artifact} from {uri} \n{err}")
+
         with self.requestor.request(url, onError, stream=True) as r:
             with open(filename, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
@@ -33,7 +36,10 @@ class Downloader(object):
 
     def verify_file(self, file, url, hash_type: str = "md5"):
         url = f"{url}.{hash_type}"
-        onError = lambda uri, err: self._throwDownloadFailed("Failed to download hash file from " + uri)
+
+        def onError(uri, err):
+            self._throwDownloadFailed("Failed to download hash file from " + uri)
+
         remote_hash = self.requestor.request(url, onError, lambda r: r.text)
         local_hash = getattr(hashlib, hash_type)(open(file, "rb").read()).hexdigest()
         return remote_hash == local_hash
