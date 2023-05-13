@@ -1,0 +1,47 @@
+name: Build and publish to PyPI
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing      
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        pip install hatch
+      env:
+        GNUPGHOME: ${{ runner.workspace }}/.gnupg
+    - name: Build package
+      run: hatch build
+    # ! gpg steps are probably not needed since gh-action-pypi-publish is used  
+    # - name: Import GPG key
+    #   run: echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --import --batch --passphrase "${{ secrets.GPG_PASSPHRASE }}"
+    # - name: Sign package
+    #   run: |
+    #     gpg --batch --yes --detach-sign --armor dist/*
+    #     gpg --batch --yes --print-md SHA256 dist/* > dist/*.sha256
+    - name: Publish distribution 📦 to Test PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
+        sign-artifacts: true
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}        
+    - name: Publish distribution 📦 to PyPI
+      if: startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        sign-artifacts: true
+        gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}        
