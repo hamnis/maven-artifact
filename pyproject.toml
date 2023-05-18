@@ -18,7 +18,7 @@ readme = "README.md"
 license = "Apache-2.0"
 
 homepage = "https://github.com/hamnis/maven-artifact"
-repository = " https://github.com/jimisola/maven-artifact.git "
+repository = " https://github.com/hamnis/maven-artifact.git "
 documentation = "https://github.com/hamnis/maven-artifact"
 
 keywords = ["maven", "mvn", "artifact", "download"]
@@ -28,7 +28,7 @@ classifiers = [
     #   3 - Alpha
     #   4 - Beta
     #   5 - Production/Stable
-    'Development Status :: 3 - Alpha',
+    'Development Status :: 4 - Beta',
 
     # Indicate who your project is intended for
     'Intended Audience :: Developers',
