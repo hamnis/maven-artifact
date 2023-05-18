@@ -60,6 +60,9 @@ source = "vcs"
 [tool.hatch.build.hooks.vcs]
 version-file = "_version.py"
 
+[tool.hatch.version.raw-options]
+local_scheme = "no-local-version"
+
 [tool.hatch.envs.test]
 dependencies = ["pytest", "pytest-sugar", "pytest-cov" ]
 
