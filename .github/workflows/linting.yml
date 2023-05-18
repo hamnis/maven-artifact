@@ -2,8 +2,6 @@ name: Linting (black and flake8)
 
 on: 
   push:
-    branches:
-      - "*"
     branches-ignore:
       - main
   pull_request:
