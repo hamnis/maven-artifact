@@ -7,6 +7,24 @@ on:
       - 'v*.*.*'
 
 jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+      - name: Install pip package(s)
+        run: pip install hatch
+      - name: Run black formatter check
+        run: hatch run lint:black --check --verbose src tests
+      - name: Run flake8 linter
+        run: hatch run lint:flake8
+      - name: Run unit and integrations tests
+        run: hatch run test:pytest --cov=maven_artifact --cov-report=xml --cov-report=html
+
   build-and-publish:
     needs: linting
     runs-on: ubuntu-latest
