@@ -15,7 +15,7 @@ develop-eggs/
 dist/
 eggs/
 lib/
-lib64/
+lib64
 parts/
 sdist/
 var/
@@ -40,3 +40,9 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# hatch
+_version.py
+
+# venv
+pyvenv.cfg
