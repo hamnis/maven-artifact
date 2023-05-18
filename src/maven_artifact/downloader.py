@@ -8,7 +8,7 @@ import getopt
 
 
 class Downloader(object):
-    def __init__(self, base="http://repo1.maven.org/maven2", username=None, password=None):
+    def __init__(self, base="https://repo.maven.apache.org/maven2", username=None, password=None):
         self.requestor = Requestor(username, password)
         self.resolver = Resolver(base, self.requestor)
 
