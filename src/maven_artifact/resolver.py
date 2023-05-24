@@ -1,6 +1,6 @@
 from lxml import etree
 
-from .requestor import RequestException
+from maven_artifact.requestor import RequestException
 
 
 class Resolver(object):

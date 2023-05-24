@@ -52,7 +52,7 @@ requires-python = ">=3.8"
 dependencies = ["lxml", "requests"]
 
 [project.scripts]
-maven-artifact = "maven_artifact.downloader:main"
+maven-artifact = "maven_artifact.main:main"
 
 [tool.hatch.version]
 source = "vcs"
