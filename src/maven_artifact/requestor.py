@@ -3,6 +3,7 @@ import requests
 
 from maven_artifact.utils import Utils
 
+
 class RequestException(Exception):
     def __init__(self, msg):
         self.msg = msg
@@ -20,11 +21,11 @@ class Requestor(object):
 
         if self.username and self.password:
             token = self.username + ":" + self.password
-            headers["Authorization"] = "Basic " + base64.b64encode(token.encode()).decode()
+            headers["Authorization"] = f"Basic {base64.b64encode(token.encode()).decode()}"
         elif Utils.is_base64(self.password):
-            headers["Authorization"] = "Basic " + base64.decode(self.password)
+            headers["Authorization"] = f"Basic {self.password}"
         elif self.token:
-            headers["Authorization"] = "Bearer " + self.token
+            headers["Authorization"] = f"Bearer {base64.b64encode(self.token.encode()).decode()}"
 
         try:
             response = getattr(requests, method)(url, headers=headers, **kwargs)

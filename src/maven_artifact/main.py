@@ -4,14 +4,14 @@ import argparse
 import os
 import sys
 import textwrap
+from maven_artifact.artifact import Artifact
 
 try:
     from maven_artifact.utils import Utils
 except ImportError:
-    sys.path.append(os.path.dirname(__file__))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from maven_artifact.utils import Utils
 
-from maven_artifact import __version__
 from maven_artifact.requestor import RequestException
 from maven_artifact.downloader import Downloader
 
@@ -55,6 +55,62 @@ class WrappedNewlineFormatter(DescriptionWrappedNewlineFormatter):
         return lines
 
 
+class MainCommand:
+    def _get_arguments(self):
+        parser = argparse.ArgumentParser(formatter_class=WrappedNewlineFormatter, epilog=__epilog__)
+        parser.add_argument(
+            "maven_coordinate",
+            help="""
+            defined by http://maven.apache.org/pom.html#Maven_Coordinates. The possible options are:
+            - groupId:artifactId:version
+            - groupId:artifactId:packaging:version
+            - groupId:artifactId:packaging:classifier:version""",
+        )
+        parser.add_argument(
+            "filename",
+            nargs="?",
+            help="""
+            If not supplied the filename will be <artifactId>.<extension>.
+            The filename directory must exist prior to download.""",
+        )
+        parser.add_argument(
+            "-m",
+            "--maven-repo",
+            dest="base",
+            default="https://repo.maven.apache.org/maven2/",
+            help="Maven repository URL (default: https://repo.maven.apache.org/maven2/)",
+        )
+
+        parser.add_argument("-u", "--username", help="username (must be combined with --password)")
+        parser.add_argument(
+            "-p",
+            "--password",
+            help="""
+            password (must be combined with --username) or
+            base64 encoded username and password (can not not be combined with --username)""",
+        )
+        parser.add_argument(
+            "-t", "--token", help="OAuth bearer token (can not be combined with --username or --password)"
+        )
+
+        parser.add_argument("-ht", "--hash-type", default="md5", help="hash type (default: md5)")
+
+        args = parser.parse_args()
+
+        username = args.username
+        password = args.password
+        token = args.token
+
+        if username and not password:
+            parser.error("The 'username' parameter requires the 'password' parameter.")
+        elif (username or password) and token:
+            parser.error("The 'token' parameter cannot be used together with 'username' or 'password'.")
+        elif (password) and not (username or token) and not Utils.is_base64(password):
+            parser.error("The 'password' parameter must be base64 if not used together with 'username'.")
+
+        return args
+
+
 __epilog__ = """
             Example:
                 %(prog)s "org.apache.solr:solr:war:3.5.0"\n
@@ -62,68 +118,20 @@ __epilog__ = """
 
 
 def main():
-    parser = argparse.ArgumentParser(formatter_class=WrappedNewlineFormatter, epilog=__epilog__)
-    parser.add_argument(
-        "maven_coordinate",
-        help="""
-        defined by http://maven.apache.org/pom.html#Maven_Coordinates. The possible options are:
-                        
-        - groupId:artifactId:version
-        - groupId:artifactId:packaging:version
-        - groupId:artifactId:packaging:classifier:version""",
-    )
-    parser.add_argument(
-        "filename",
-        nargs="?",
-        help="""
-        If not supplied the filename will be <artifactId>.<extension>.
-        The filename directory must exist prior to download.""",
-    )
-    parser.add_argument(
-        "-m",
-        "--maven-repo",
-        dest="base",
-        default="https://repo.maven.apache.org/maven2/",
-        help="Maven repository URL (default: https://repo.maven.apache.org/maven2/)",
-    )
-
-    parser.add_argument("-u", "--username", help="username (must be combined with --password)")
-    parser.add_argument(
-        "-p", "--password",
-        help="""
-        password (must be combined with --username) or
-        base64 encoded username and password (can not not be combined with --username)"""
-    )
-    parser.add_argument("-t", "--token", help="OAuth bearer token (can not be combined with --username or --password)")
-
-    parser.add_argument("-ht", "--hash-type", default="md5", help="hash type (default: md5)")
-
-    args = parser.parse_args()
-
-    base = args.base
-    username = args.username
-    password = args.password
-    token = args.token
-    hash_type = args.hash_type
-
-    if username and not password:
-        parser.error("The 'username' parameter requires the 'password' parameter.")
-    elif (username or password) and token:
-        parser.error("The 'token' parameter cannot be used together with 'username' or 'password'.")
-    elif (password) and not (username or token) and not Utils.is_base64(password):
-        parser.error("The 'password' parameter must be base64 if not used together with 'username'.")
-
-    dl = Downloader(base=base, username=username, password=password, token=token)
-
-    artifact = Utils.parse(args.maven_coordinate)
-
-    filename = args.filename
+    mc = MainCommand()
+    args = mc._get_arguments()
 
     try:
-        if dl.download(artifact, filename, hash_type):
+        dl = Downloader(base=args.base, username=args.username, password=args.password, token=args.token)
+
+        artifact = Artifact.parse(args.maven_coordinate)
+
+        filename = args.filename
+
+        if dl.download(artifact, filename, args.hash_type):
             sys.exit(0)
         else:
-            parser.print_usage()
+            print("Download failed.")
             sys.exit(1)
     except RequestException as e:
         print(e.msg)

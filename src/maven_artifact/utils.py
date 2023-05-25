@@ -1,28 +1,7 @@
 import base64
 
-from maven_artifact.artifact import Artifact
-
 
 class Utils:
-
-    @staticmethod
-    def parse(maven_coordinate):
-        parts = maven_coordinate.split(":")
-        if len(parts) >= 3:
-            g = parts[0]
-            a = parts[1]
-            v = parts[len(parts) - 1]
-            t = None
-            c = None
-            if len(parts) == 4:
-                t = parts[2]
-            if len(parts) == 5:
-                t = parts[2]
-                c = parts[3]
-            return Artifact(group_id=g, artifact_id=a, version=v, classifier=c, extension=t)
-        else:
-            return None
-    
     @staticmethod
     def is_base64(sb):
         try:
@@ -36,4 +15,3 @@ class Utils:
             return base64.b64encode(base64.b64decode(sb_bytes)) == sb_bytes
         except Exception:
             return False
-

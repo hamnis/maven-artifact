@@ -1,7 +1,8 @@
 import os
 import tempfile
 
-from maven_artifact import Artifact, Downloader
+from maven_artifact import Downloader
+from maven_artifact.artifact import Artifact
 
 
 def test_downloader_of_existing_artifact():

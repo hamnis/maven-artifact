@@ -1,7 +1,7 @@
 import hashlib
 import os
 
-from maven_artifact.requestor import Requestor
+from maven_artifact.requestor import RequestException, Requestor
 from maven_artifact.resolver import Resolver
 
 

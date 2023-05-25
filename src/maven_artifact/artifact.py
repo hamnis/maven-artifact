@@ -53,3 +53,21 @@ class Artifact(object):
             return "%s:%s:%s:%s" % (self.group_id, self.artifact_id, self.extension, self.version)
         else:
             return "%s:%s:%s" % (self.group_id, self.artifact_id, self.version)
+
+    @staticmethod
+    def parse(maven_coordinate):
+        parts = maven_coordinate.split(":")
+        if len(parts) >= 3:
+            g = parts[0]
+            a = parts[1]
+            v = parts[len(parts) - 1]
+            t = None
+            c = None
+            if len(parts) == 4:
+                t = parts[2]
+            if len(parts) == 5:
+                t = parts[2]
+                c = parts[3]
+            return Artifact(group_id=g, artifact_id=a, version=v, classifier=c, extension=t)
+        else:
+            return None
