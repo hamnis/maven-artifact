@@ -54,6 +54,16 @@ class Artifact(object):
         else:
             return "%s:%s:%s" % (self.group_id, self.artifact_id, self.version)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, Artifact)
+            and self.group_id == other.group_id
+            and self.artifact_id == other.artifact_id
+            and self.version == other.version
+            and self.classifier == other.classifier
+            and self.extension == other.extension
+        )
+
     @staticmethod
     def parse(maven_coordinate):
         parts = maven_coordinate.split(":")
