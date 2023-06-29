@@ -25,7 +25,7 @@ class Requestor(object):
         elif Utils.is_base64(self.password):
             headers["Authorization"] = f"Basic {self.password}"
         elif self.token:
-            headers["Authorization"] = f"Bearer {base64.b64encode(self.token.encode()).decode()}"
+            headers["Authorization"] = f"Bearer {self.token}"
 
         try:
             response = getattr(requests, method)(url, headers=headers, **kwargs)
