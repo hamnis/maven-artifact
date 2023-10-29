@@ -1,5 +1,6 @@
 import base64
 import requests
+from importlib.metadata import version
 
 from maven_artifact.utils import Utils
 
@@ -10,7 +11,13 @@ class RequestException(Exception):
 
 
 class Requestor(object):
-    def __init__(self, username=None, password=None, token=None, user_agent="Maven Artifact Downloader/1.0"):
+    def __init__(
+        self,
+        username=None,
+        password=None,
+        token=None,
+        user_agent=f"Maven Artifact Downloader/{version('maven-artifact')}",
+    ):
         self.user_agent = user_agent
         self.username = username
         self.password = password
