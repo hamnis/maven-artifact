@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 import textwrap
+from importlib.metadata import version
 from maven_artifact.artifact import Artifact
 
 try:
@@ -58,6 +59,13 @@ class WrappedNewlineFormatter(DescriptionWrappedNewlineFormatter):
 class MainCommand:
     def _get_arguments(self):
         parser = argparse.ArgumentParser(formatter_class=WrappedNewlineFormatter, epilog=__epilog__)
+        parser.add_argument(
+            "-V",
+            "--version",
+            action="version",
+            version=version("maven-artifact"),
+        )
+
         parser.add_argument(
             "maven_coordinate",
             help="""
