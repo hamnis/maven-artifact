@@ -1,6 +1,5 @@
 import base64
 import requests
-from importlib.metadata import version
 
 from maven_artifact.utils import Utils
 
@@ -16,12 +15,12 @@ class Requestor(object):
         username=None,
         password=None,
         token=None,
-        user_agent=f"Maven Artifact Downloader/{version('maven-artifact')}",
+        user_agent=f"Maven Artifact Downloader/{Utils.get_version()}",
     ):
-        self.user_agent = user_agent
         self.username = username
         self.password = password
         self.token = token
+        self.user_agent = user_agent
 
     def request(self, url, onFail, onSuccess=None, method: str = "get", **kwargs):
         headers = {"User-Agent": self.user_agent}
