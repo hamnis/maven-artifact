@@ -1,18 +1,20 @@
 #!/bin/env python
 
-import argparse
+
 import os
 import sys
+
+if __package__ is None:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    from maven_artifact.utils import Utils
+
+    Utils.is_installed_package = False
+
+import argparse
 import textwrap
-from importlib.metadata import version
+
 from maven_artifact.artifact import Artifact
-
-try:
-    from maven_artifact.utils import Utils
-except ImportError:
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from maven_artifact.utils import Utils
-
+from maven_artifact.utils import Utils
 from maven_artifact.requestor import RequestException
 from maven_artifact.downloader import Downloader
 
@@ -57,13 +59,15 @@ class WrappedNewlineFormatter(DescriptionWrappedNewlineFormatter):
 
 
 class MainCommand:
+
     def _get_arguments(self):
         parser = argparse.ArgumentParser(formatter_class=WrappedNewlineFormatter, epilog=__epilog__)
+
         parser.add_argument(
             "-V",
             "--version",
             action="version",
-            version=version("maven-artifact"),
+            version=f"{Utils.get_version()}",
         )
 
         parser.add_argument(
