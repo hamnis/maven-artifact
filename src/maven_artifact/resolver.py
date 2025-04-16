@@ -43,4 +43,4 @@ class Resolver(object):
 
     def uri_for_artifact(self, artifact):
         resolved = self.resolve(artifact)
-        return artifact.uri(self.base, resolved.version)
+        return resolved.uri(self.base)

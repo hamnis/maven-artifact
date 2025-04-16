@@ -21,15 +21,15 @@ class Artifact(object):
         base = self.group_id.replace(".", "/") + "/" + self.artifact_id
         return base if not with_version else f"{base}/{self.version}"
 
-    def uri(self, base, resolved_version=None):
-        if self.is_snapshot() and not resolved_version:
+    def uri(self, base):
+        if self.is_snapshot():
             raise ValueError("Expected unique version for snapshot artifact " + str(self))
         elif not self.is_snapshot():
             resolved_version = self.version
-        ret = f"{base}/{self.path()}/{self.artifact_id}-{resolved_version}"
-        if self.classifier:
-            ret += "-" + self.classifier
-        return f"{ret}.{self.extension}"
+            ret = f"{base}/{self.path()}/{self.artifact_id}-{resolved_version}"
+            if self.classifier:
+                ret += "-" + self.classifier
+            return f"{ret}.{self.extension}"
 
     def with_version(self, _version):
         return Artifact(self.group_id, self.artifact_id, _version, self.classifier, self.extension)
