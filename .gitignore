@@ -46,3 +46,6 @@ _version.py
 
 # venv
 pyvenv.cfg
+
+# other
+.idea

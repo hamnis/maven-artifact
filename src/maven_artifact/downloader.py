@@ -5,7 +5,7 @@ from maven_artifact.requestor import RequestException, Requestor
 from maven_artifact.resolver import Resolver
 
 
-class Downloader(object):
+class Downloader:
     def __init__(self, base="https://repo.maven.apache.org/maven2", username=None, password=None, token=None):
         self.requestor = Requestor(username=username, password=password, token=token)
         self.resolver = Resolver(base, self.requestor)

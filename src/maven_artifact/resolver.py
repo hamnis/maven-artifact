@@ -3,7 +3,7 @@ from lxml import etree
 from maven_artifact.requestor import RequestException
 
 
-class Resolver(object):
+class Resolver:
     def __init__(self, base, requestor):
         self.requestor = requestor
         if base.endswith("/"):

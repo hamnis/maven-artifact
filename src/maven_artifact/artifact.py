@@ -1,7 +1,7 @@
 import os
 
 
-class Artifact(object):
+class Artifact:
     def __init__(self, group_id, artifact_id, version, classifier=None, extension=None):
         if not group_id:
             raise ValueError("group_id must be set")

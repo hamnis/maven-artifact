@@ -1,4 +1,5 @@
 import pytest
+
 from maven_artifact import Artifact
 
 

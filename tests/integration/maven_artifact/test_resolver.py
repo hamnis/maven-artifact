@@ -1,5 +1,6 @@
-from maven_artifact import Resolver, Requestor
+from maven_artifact import Requestor, Resolver
 from maven_artifact.artifact import Artifact
+
 
 def test_resolve_artifact():
     req = Requestor()
