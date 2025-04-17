@@ -14,9 +14,9 @@ import argparse
 import textwrap
 
 from maven_artifact.artifact import Artifact
-from maven_artifact.utils import Utils
-from maven_artifact.requestor import RequestException
 from maven_artifact.downloader import Downloader
+from maven_artifact.requestor import RequestException
+from maven_artifact.utils import Utils
 
 
 class DescriptionWrappedNewlineFormatter(argparse.HelpFormatter):
@@ -59,7 +59,6 @@ class WrappedNewlineFormatter(DescriptionWrappedNewlineFormatter):
 
 
 class MainCommand:
-
     def _get_arguments(self):
         parser = argparse.ArgumentParser(formatter_class=WrappedNewlineFormatter, epilog=__epilog__)
 

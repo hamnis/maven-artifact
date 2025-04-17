@@ -1,4 +1,5 @@
 import pytest
+
 from maven_artifact import Artifact
 
 
@@ -14,7 +15,7 @@ def test_issnapshot():
 
     assert artifact.is_snapshot() is False
 
-    artifact = artifact.with_version(_version="0.0.1-SNAPSHOT")
+    artifact = artifact.with_version(version="0.0.1-SNAPSHOT")
 
     assert artifact.is_snapshot() is True
 

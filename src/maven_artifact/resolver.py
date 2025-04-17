@@ -2,27 +2,32 @@ from lxml import etree
 
 from maven_artifact.requestor import RequestException
 
+from maven_artifact.requestor import Requestor
 
-class Resolver(object):
-    def __init__(self, base, requestor):
+
+class Resolver:
+    def __init__(self, base: str, requestor: Requestor):
         self.requestor = requestor
         if base.endswith("/"):
             base = base.rstrip("/")
         self.base = base
 
+    @staticmethod
+    def default():
+        return Resolver("https://repo1.maven.org/maven2", Requestor())
+
     def _find_latest_version_available(self, artifact):
-        path = "/%s/maven-metadata.xml" % (artifact.path(False))
+        path = f"/{artifact.path(False)}/maven-metadata.xml"
         xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.fromstring(r.content))
         v = xml.xpath("/metadata/versioning/versions/version[last()]/text()")
-        if v:
-            return v[0]
+        return v[0] if v else None
 
     def _find_latest_snapshot_version(self, artifact):
-        path = "/%s/maven-metadata.xml" % (artifact.path())
+        path = f"/{artifact.path()}/maven-metadata.xml"
         xml = self.requestor.request(self.base + path, self._onFail, lambda r: etree.fromstring(r.content))
         timestamp = xml.xpath("/metadata/versioning/snapshot/timestamp/text()")[0]
-        buildNumber = xml.xpath("/metadata/versioning/snapshot/buildNumber/text()")[0]
-        meta_version = f"{timestamp}-{buildNumber}"
+        build_number = xml.xpath("/metadata/versioning/snapshot/buildNumber/text()")[0]
+        meta_version = f"{timestamp}-{build_number}"
         # obtain exact version value
         versions = xml.xpath("/metadata/versioning/snapshotVersions/snapshotVersion/value/text()")
         for version in set(versions):
@@ -39,8 +44,8 @@ class Resolver(object):
             version = self._find_latest_version_available(artifact)
         elif artifact.is_snapshot():
             version = self._find_latest_snapshot_version(artifact)
-        return artifact.with_version(version)
+        return artifact.with_resolved_version(version)
 
     def uri_for_artifact(self, artifact):
         resolved = self.resolve(artifact)
-        return artifact.uri(self.base, resolved.version)
+        return resolved.uri(self.base)

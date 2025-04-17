@@ -1,4 +1,5 @@
 import base64
+
 import requests
 
 from maven_artifact.utils import Utils
@@ -9,7 +10,7 @@ class RequestException(Exception):
         self.msg = msg
 
 
-class Requestor(object):
+class Requestor:
     def __init__(
         self,
         username=None,
