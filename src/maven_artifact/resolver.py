@@ -44,6 +44,12 @@ class Resolver:
             version = self._find_latest_version_available(artifact)
         elif artifact.is_snapshot():
             version = self._find_latest_snapshot_version(artifact)
+
+        resolved_artifact = artifact.with_version(version)
+        if resolved_artifact.is_snapshot():
+            # We need to re-resolve the snapshot version to get the actual version
+            resolved_version = self._find_latest_snapshot_version(resolved_artifact)
+            return resolved_artifact.with_resolved_version(resolved_version)
         return artifact.with_resolved_version(version)
 
     def uri_for_artifact(self, artifact):
