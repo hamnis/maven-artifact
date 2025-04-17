@@ -59,7 +59,6 @@ class WrappedNewlineFormatter(DescriptionWrappedNewlineFormatter):
 
 
 class MainCommand:
-
     def _get_arguments(self):
         parser = argparse.ArgumentParser(formatter_class=WrappedNewlineFormatter, epilog=__epilog__)
 
