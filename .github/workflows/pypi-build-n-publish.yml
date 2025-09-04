@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
@@ -32,7 +32,7 @@ jobs:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing      
     steps:
     - name: Check out source repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0 #full history
     - name: Set up Python
